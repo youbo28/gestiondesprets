@@ -49,4 +49,13 @@ public class PretService {
 		return pretRepository.save(pret);
 	}
 
+	public Page<Pret> searchPretByStatut(String statut, Pageable pageable) {
+		return pretRepository.findByStatut(statut, pageable);
+	}
+
+	public Page<Pret> searchPretByEmploye(String employeNom, Pageable pageable) {
+
+		return pretRepository.findByEmployeNomContainingIgnoreCase(employeNom, pageable);
+	}
+
 }

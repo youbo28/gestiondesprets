@@ -1,7 +1,5 @@
 package com.ayoub.gestiondespret.services;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +18,8 @@ public class EmployeService {
 
 	public Page<Employe> getAllEmploye(int page, int size) {
 		Pageable pageable = PageRequest.of(page, size);
+//		System.out.println(
+//				"the  number of element is " + employeRepository.findAll(pageable).getContent().get(0).getNomComplet());
 		return employeRepository.findAll(pageable);
 	}
 
@@ -32,6 +32,7 @@ public class EmployeService {
 
 		if (employeRepository.existsById(id)) {
 			employeRepository.deleteById(id);
+			return;
 		}
 		throw new EntityNotFoundException("il n'y a aucun employé avec l'id " + id);
 
@@ -47,5 +48,10 @@ public class EmployeService {
 
 	public Employe saveEmploye(Employe employe) {
 		return employeRepository.save(employe);
+	}
+
+	public Page<Employe> searchEmployeByName(String nom, Pageable pageable) {
+		return employeRepository.findBynomContainingIgnoreCase(nom, pageable);
+	//	return employeRepository.findBynomComplet(nomComplet, pageable);
 	}
 }

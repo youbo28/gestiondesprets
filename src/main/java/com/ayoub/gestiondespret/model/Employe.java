@@ -5,7 +5,10 @@ import java.util.List;
 import com.ayoub.gestiondespret.costumAnnotations.ValidateNomDEmploye;
 import com.ayoub.gestiondespret.modelView.EmployeView;
 import com.ayoub.gestiondespret.modelView.PretView;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -24,6 +27,7 @@ import lombok.Data;
  * */
 @Entity
 @Data
+
 public class Employe {
 
 	/* Id de l'employe */
@@ -37,7 +41,7 @@ public class Employe {
 	@ValidateNomDEmploye(message = "champ nom de l'employé ne peut pas être nul ou contenir des chiffres")
 	@jakarta.validation.constraints.NotEmpty
 	@NotNull
-	private String nomComplet;
+	private String nom;
 
 	/* Post de l'employe */
 	@JsonView({ PretView.Summary.class, EmployeView.Summary.class })
@@ -54,6 +58,7 @@ public class Employe {
 	/* list des prets de l'employe */
 	@JsonView(EmployeView.Summary.class)
 	@OneToMany(mappedBy = "employe", cascade = CascadeType.ALL)
+	//@JsonIgnore
 	private List<Pret> prets;
 
 }

@@ -1,7 +1,11 @@
 package com.ayoub.gestiondespret.contrôleurs;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +23,8 @@ import com.ayoub.gestiondespret.modelView.EmployeView;
 import com.ayoub.gestiondespret.services.EmployeService;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/employe")
 public class EmployeControlleur {
@@ -28,10 +34,11 @@ public class EmployeControlleur {
 	// Endpoint pour récupérer tous les employés
 	@JsonView(EmployeView.Summary.class)
 	@GetMapping
-	public ResponseEntity<Page<Employe>> getAllEmploye(@RequestParam(defaultValue = "0") Integer page,
-			@RequestParam(defaultValue = "10") Integer size) {
+	public ResponseEntity<List<Employe>> getAllEmploye(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+//		System.err.println("le salaire est " + employeService.getAllEmploye(page, size).getContent().get(0).getSalaire());
 
-		return new ResponseEntity<>(employeService.getAllEmploye(page, size), HttpStatus.OK);
+		return new ResponseEntity<List<Employe>>(employeService.getAllEmploye(page, size).getContent(), HttpStatus.OK);
 
 	}
 
@@ -46,7 +53,7 @@ public class EmployeControlleur {
 
 	// Endpoint pour mettre à jour un employé
 	@PutMapping("/{id}")
-	public ResponseEntity<Employe> updateEmploye(@PathVariable Long id, @RequestBody Employe employe) throws Exception {
+	public ResponseEntity<Employe> updateEmploye(@PathVariable Long id, @Valid @RequestBody Employe employe) throws Exception {
 
 		return new ResponseEntity<Employe>(employeService.updateEmploye(employe), HttpStatus.OK);
 	}
@@ -62,6 +69,17 @@ public class EmployeControlleur {
 	public ResponseEntity<String> deleteEmploye(@PathVariable Long id) throws Exception {
 		employeService.deleteEmployeById(id);
 		return new ResponseEntity<String>(HttpStatus.OK);
-
 	}
+
+	@JsonView(EmployeView.Summary.class)
+	@GetMapping("/search")
+	/* Endpoint pour la recherche d'un employe par nom */
+	public ResponseEntity<List<Employe>> searchEmployeByName(@RequestParam String nom,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+		Pageable pageable = PageRequest.of(page, size);
+
+		return new ResponseEntity<List<Employe>>(employeService.searchEmployeByName(nom, pageable).getContent(),
+				HttpStatus.OK);
+	}
+
 }
